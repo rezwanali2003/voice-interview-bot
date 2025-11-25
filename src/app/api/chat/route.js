@@ -1,4 +1,4 @@
-// ✅ UPDATED API ROUTE - BACKEND
+// ✅ UPDATED API ROUTE - BACKEND (Question-Focused)
 import { NextResponse } from "next/server";
 import fs from 'fs/promises';
 import path from 'path';
@@ -11,11 +11,11 @@ export async function POST(req) {
 
     const resumePath = path.join(process.cwd(), 'public', 'resume.txt');
     let resumeData = '';
-    
+
     try {
       await fs.access(resumePath);
       const fullResume = await fs.readFile(resumePath, 'utf8');
-      
+
       const sections = {
         name: fullResume.match(/(?:Name|Summary|About)\s*:\s*(.*?)(?=\n[A-Z][a-z]+:|$)/is)?.[1]?.trim() || '',
         education: fullResume.match(/Education\s*:\s*(.*?)(?=\n[A-Z][a-z]+:|$)/is)?.[1]?.trim() || '',
@@ -29,9 +29,9 @@ export async function POST(req) {
         .filter(([, content]) => content.length > 5)
         .map(([key, content]) => `**${key.toUpperCase()}**: ${content}`)
         .join('\n\n') || fullResume.slice(0, 1500);
-      
+
     } catch (fileError) {
-      resumeData = `**RESUME**: Shaik Rezwan Ali - B.Tech CS (AI/ML), Next.js/React/Node.js, Portfolio/E-commerce/Healthcare projects [memory:5][memory:7]`;
+      resumeData = `**RESUME**: Shaik Rezwan Ali - B.Tech CS (AI/ML), Next.js/React/Node.js, Portfolio/E-commerce/Healthcare projects`;
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -45,31 +45,40 @@ export async function POST(req) {
       body: JSON.stringify({
         model: MODELS[0],
         temperature: 0.1,
-        max_tokens: interactiveMode ? 150 : 400,  // Shorter for interactive
+        max_tokens: interactiveMode ? 150 : 400,
         messages: [
           {
             role: "system",
-            content: `You are **Shaik Rezwan Ali** - Fresher Software Engineer [memory:5]
+            content: `You are **Shaik Rezwan Ali** - Fresher Software Engineer
 
 **RESUME FACTS ONLY**:
 ${resumeData}
 
-**MANDATORY INTRODUCTION FORMAT** (ALWAYS when asked about you/background/experience/projects/education/tell me about yourself):
-"Hi! I'm Shaik Rezwan Ali, [NAME/EDUCATION details]. 
-Professional Experience: [EXPERIENCE]. 
-Core Skills: [SKILLS - Next.js, React, Node.js, DSA, etc]. 
-Key Projects: [PROJECTS - Portfolio, E-commerce, Healthcare dashboard, etc]. 
-Achievements: [ACHIEVEMENTS]. 
-Excited to build scalable AI solutions! Thank you!"
+**🚨 STRICT QUESTION-ONLY RULE**: 
+- Answer ONLY the specific question asked
+- NO extra chit-chat, background stories, or unsolicited info
+- If asked about experience/projects/education/background: Use EXACT intro format below
+- Stick to question topic 100%
 
-${interactiveMode ? '**INTERACTIVE MODE**: Short responses (50-80 words). Continue conversation naturally. User can interrupt anytime.' : '**STANDARD MODE**: Complete detailed answers.'}
+**MANDATORY INTRODUCTION FORMAT** (ONLY when directly asked about you/background/experience/projects/education/tell me about yourself):
+"Hi! I'm Shaik Rezwan Ali, [NAME/EDUCATION].
+Experience: [EXPERIENCE].
+Skills: [SKILLS - Next.js, React, Node.js, DSA].
+Projects: [PROJECTS - Portfolio, E-commerce, Healthcare].
+Achievements: [ACHIEVEMENTS].
+Excited to build AI solutions! Thank you!"
 
-**RULES**:
-1. Introduction = 150-200 words, EXACT format above
-2. DSA: Code + "Time: O(n), Space: O(1)"
-3. Voice-friendly, fresher enthusiasm
-4. NO hallucinations - resume facts only
-5. End politely: "Thank you!"`
+**RESPONSE RULES**:
+1. **QUESTION-FOCUSED**: Direct answer to question only with little elaboration
+2. **NO INTRODUCTION** unless specifically asked about yourself or breif or something like that
+3. ${interactiveMode ? 'SHORT (50-80 words)' : 'DETAILED but question-specific'}
+4. Resume facts ONLY - NO hallucinations
+5. End with "Thank you!" if appropriate
+
+**Examples**:
+Q: "What’s your experience?" → Use intro format
+Q: "How do you handle state?" → "In React/Next.js I use Redux/Zustand..."
+Q: "Favorite framework?" → "Next.js for full-stack"`
           },
           { role: "user", content: message }
         ]

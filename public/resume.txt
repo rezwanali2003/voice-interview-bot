@@ -29,9 +29,7 @@ Bhashyam High School | 2017-2019 | 85%
 3. DRONE LANDING CV: ResNeXt50 + OpenCV | 92% accuracy (+6% improvement) 🎯
 4. AUDIO TRANSLATION: English-Hindi STT + Seq2Seq | 15% accuracy boost
 5. ADAPTIVE LEARNING AI: SVM + Reinforcement Learning | 20% engagement
-6. HEALTHCARE DASHBOARD: Next.js + Django
-7. E-COMMERCE: React + Node.js + MongoDB
-8. AI VIDEO AGENT: Python + RAG
+6. AI  VIDEO Dout solver AGENT: Python + RAG - under development looking for best image genrator to genarte the inages reast 5 agents are working fine just lookig for a good image agent
 
 SKILLS (PROVEN IN PRODUCTION):
 PYTHON(ADVANCED) | JavaScript | Java | SQL | Flutter
